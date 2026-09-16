@@ -1,0 +1,23 @@
+{
+  "name": "codechat-monorepo",
+  "version": "1.0.0",
+  "description": "CodeChat — Code with strangers. Talk through code.",
+  "scripts": {
+    "server": "npm --prefix server start",
+    "server:dev": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "client:build": "npm --prefix client run build",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start"
+  },
+  "keywords": [
+    "codechat",
+    "realtime",
+    "socketio",
+    "react",
+    "codemirror",
+    "developer-chat"
+  ],
+  "author": "CodeChat Team",
+  "license": "MIT"
+}
