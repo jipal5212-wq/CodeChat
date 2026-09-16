@@ -29,7 +29,10 @@ function ChatPage({ userData, onLeave }) {
       <header className="chat-header">
         <div className="header-left">
           <div className="header-brand">
-            <h1 className="header-logo">&lt;CodeChat /&gt;</h1>
+            <div className="header-brand-row">
+              <h1 className="header-logo">&lt;CodeChat /&gt;</h1>
+              <span className="creator-pill" title="Created by Ashish">by Ashish</span>
+            </div>
             <span className="header-tagline">Code with strangers. Talk through code.</span>
           </div>
         </div>

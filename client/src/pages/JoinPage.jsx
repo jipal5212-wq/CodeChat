@@ -137,9 +137,12 @@ function JoinPage({ onJoin }) {
           </div>
         </div>
 
-        {/* Terminal footer quote */}
+        {/* Terminal footer quote & Credits */}
         <div className="join-footer">
           <code>$ printf(&quot;You don&apos;t type messages. You code them.\n&quot;);</code>
+          <div className="made-by-badge">
+            <span>Made with <span className="heart-icon">♥</span> by <strong>Ashish</strong></span>
+          </div>
         </div>
       </div>
     </div>
