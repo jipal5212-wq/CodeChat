@@ -88,7 +88,15 @@ module.exports = async (req, res) => {
   // ─────────────────────────────────────────
   if (req.method === 'POST') {
     try {
-      const { username, language, code } = req.body || {};
+      let body = req.body;
+      if (typeof body === 'string') {
+        try {
+          body = JSON.parse(body);
+        } catch (parseErr) {
+          // keep as is
+        }
+      }
+      const { username, language, code } = body || {};
 
       if (!code || typeof code !== 'string') {
         return res.status(400).json({ valid: false, error: 'Code is required' });
