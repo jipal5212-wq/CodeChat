@@ -9,62 +9,48 @@ function JoinPage({ onJoin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Generate random name if empty
+    // Generate clean username
     const finalName = username.trim() || `Coder_${Math.floor(1000 + Math.random() * 9000)}`;
-
     setLoading(true);
 
+    // 1. Fetch recent messages from /api/messages as fast initial payload
+    let initialMessages = [];
+    try {
+      const res = await fetch('/api/messages');
+      if (res.ok) {
+        const data = await res.json();
+        initialMessages = data?.messages || [];
+      }
+    } catch {
+      // Ignore fetch error, socket or state fallback will handle
+    }
+
+    sessionStorage.setItem('codechat_username', finalName);
+
+    // 2. Try socket connection in parallel
     try {
       const socket = connectSocket();
-
-      // Listen for room joined
-      const handleJoined = (data) => {
-        setLoading(false);
-        sessionStorage.setItem('codechat_username', finalName);
-        onJoin({
-          username: finalName,
-          roomId: 'GLOBAL',
-          language: data?.language || 'python',
-          messages: data?.messages || [],
-        });
-      };
-
-      const handleError = (data) => {
-        setLoading(false);
-        setError(data?.error || 'Failed to connect to chat.');
-      };
-
-      socket.once(SOCKET_EVENTS.ROOM_JOINED, handleJoined);
-      socket.once(SOCKET_EVENTS.MESSAGE_ERROR, handleError);
-
-      // Timeout fallback
-      const timer = setTimeout(() => {
-        if (loading) {
-          setLoading(false);
-          // Fallback: Proceed even if socket acknowledgment delayed
-          sessionStorage.setItem('codechat_username', finalName);
-          onJoin({
-            username: finalName,
-            roomId: 'GLOBAL',
-            language: 'python',
-            messages: [],
-          });
-        }
-      }, 3000);
-
       socket.emit(SOCKET_EVENTS.JOIN_ROOM, {
         username: finalName,
         language: 'python',
         roomId: 'GLOBAL',
       });
-    } catch (err) {
-      setLoading(false);
-      setError('Connection error. Is the server running?');
+    } catch (socketErr) {
+      console.warn('Socket connection attempt:', socketErr.message);
     }
+
+    // 3. Immediately transition into Chat
+    setLoading(false);
+    onJoin({
+      username: finalName,
+      roomId: 'GLOBAL',
+      language: 'python',
+      messages: initialMessages,
+    });
   };
 
   return (
@@ -139,7 +125,7 @@ function JoinPage({ onJoin }) {
         <div className="join-features-row">
           <div className="feature-pill">
             <span className="feature-icon">⚡</span>
-            <span>Real-time WebSockets</span>
+            <span>Real-time Stream</span>
           </div>
           <div className="feature-pill">
             <span className="feature-icon">🛡️</span>
